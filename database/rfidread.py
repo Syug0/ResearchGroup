@@ -14,6 +14,6 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS records (rfid VARCHAR(64), num VARC
 response = urlopen("http://127.0.0.1") #Get Json data from API
 data_json = json.loads(response.read()) #Load json data from HTTP GET
 sql = "INSERT INTO records (rdif, num , date_entry) VALUES (%s, %s, %s)"
-val = (data_json["RFID"], data_json["Num"], datetime.now())
+val = (data_json["info"]["RFID"], data_json["info"]["Num"], datetime.now())
 mycursor.execute(sql, val)
 mydb.commit()
