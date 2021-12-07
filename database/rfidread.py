@@ -1,5 +1,6 @@
 import json
 import mysql.connector
+from urllib.request import urlopen
 from datetime import datetime
 
 mydb = mysql.connector.connect(
@@ -10,7 +11,7 @@ mydb = mysql.connector.connect(
 )
 
 mycursor = mydb.cursor()
-mycursor.execute("CREATE TABLE IF NOT EXISTS records (rfid VARCHAR(64), num VARCHAR(10), date_entry VARCHAR(128)") #Create Database
+mycursor.execute("CREATE TABLE IF NOT EXISTS records (rfid VARCHAR(64), num VARCHAR(10), date_entry VARCHAR(128))") #Create Database
 response = urlopen("http://127.0.0.1") #Get Json data from API
 data_json = json.loads(response.read()) #Load json data from HTTP GET
 sql = "INSERT INTO records (rfid, num , date_entry) VALUES (%s, %s, %s)"
