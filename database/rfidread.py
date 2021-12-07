@@ -3,7 +3,7 @@ import mysql.connector
 from datetime import datetime
 
 mydb = mysql.connector.connect(
-  host=127.0.0.1",
+  host="127.0.0.1",
   user="rfid_db",
   passwd="rfid_db",
   database="rfid_db"
