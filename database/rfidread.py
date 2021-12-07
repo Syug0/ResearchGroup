@@ -3,10 +3,10 @@ import mysql.connector
 from datetime import datetime
 
 mydb = mysql.connector.connect(
-  host=db["127.0.0.1"],
-  user=db["rfid_db"],
-  passwd=db["rfid_db"],
-  database=db["rfid_db"]
+  host=127.0.0.1",
+  user="rfid_db",
+  passwd="rfid_db",
+  database="rfid_db"
 )
 
 mycursor = mydb.cursor()
