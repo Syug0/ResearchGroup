@@ -2,6 +2,9 @@
 #include <MFRC522.h>
 #include <Key.h>
 #include <Keypad.h>
+//#include <Keyboard.h>
+#include <ArduinoJson.h>
+#include <time.h>
 
 //RFID
 constexpr uint8_t RST_PIN = 9;          // Configurable, see typical pin layout above
@@ -33,33 +36,70 @@ void setup() {
     mfrc522.PCD_Init();   // Init MFRC522
     mfrc522.PCD_DumpVersionToSerial();  // Show details of PCD - MFRC522 Card Reader details
     Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks..."));
+    //Keyboard.begin();
 }
 
 void loop() {
+  int RFIDflag;
+  int AbleToPassTime;
+  int PassNum;
+  time_t start_time, end_time;
+  char ctoi;
+  
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
-      return;
+    return;
   }
 
   // Select one of the cards
   if ( ! mfrc522.PICC_ReadCardSerial()) {
-      return;
+    return;
+  }
+  if(RFIDflag == 0 && Serial.read() >= 1){
+    Serial.println("Alert");
   }
 
   if(mfrc522.uid.uidByte[0] == 0x03 && mfrc522.uid.uidByte[1] == 0x28 //UID
   && mfrc522.uid.uidByte[2] == 0x46 && mfrc522.uid.uidByte[3] == 0x18){
     Serial.println("Pass");
-    while(Serial.available() == 0){
-      char customKey = customKeypad.getKey();//押されたキーを検出
-     if (customKey){
-     Serial.println(customKey);
-     break;
+    RFIDflag = 1;
+    while(1){
+     char customkey = customKeypad.getKey();//押されたキーを検出
+     if (customkey){
+     Serial.println(customkey);
+     ctoi = customkey;
+     AbleToPassTime =0;
+     break; //whileを抜けれているのか　or loop関数を抜けている!?
      }
+     //Serial.print("wtf");
     }
-    
+    //Serial.print("WTF");
   }else{
     Serial.println("fail");
+    RFIDflag = 0;
     delay(2000);
+  }
+//  Serial.println("RFIDflag");
+//  Serial.println(RFIDflag);
+  int AbleToPassNum = ctoi - '0';
+//  Serial.println("AbleToPassNum");
+//  Serial.println(AbleToPassNum);
+  Serial.println(AbleToPassTime);
+  
+  if(RFIDflag == 1){
+    AbleToPassTime = time(NULL);
+    while( AbleToPassTime <= 10 && PassNum < AbleToPassNum){
+    AbleToPassTime = time(NULL) - AbleToPassTime;
+    Serial.println("a");
+      if( Serial.read() ==  1){
+      PassNum++;
+      AbleToPassTime = 0;
+      }else{
+        return;
+      }
+    }
+     Serial.println("Success! PassNum");
+     Serial.println(PassNum);
   }
 }
   
