@@ -42,9 +42,10 @@ void setup() {
 void loop() {
   int RFIDflag;
   int AbleToPassTime;
-  int PassNum;
+  int PassNum = 0;
   time_t start_time, end_time;
   char ctoi;
+  char val;
   
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
@@ -55,7 +56,7 @@ void loop() {
   if ( ! mfrc522.PICC_ReadCardSerial()) {
     return;
   }
-  if(RFIDflag == 0 && Serial.read() >= 1){
+  if(RFIDflag == 0 && val >= 1){
     Serial.println("Alert");
   }
 
@@ -87,19 +88,22 @@ void loop() {
   Serial.println(AbleToPassTime);
   
   if(RFIDflag == 1){
-    AbleToPassTime = time(NULL);
-    while( AbleToPassTime <= 10 && PassNum < AbleToPassNum){
-    AbleToPassTime = time(NULL) - AbleToPassTime;
-    Serial.println("a");
-      if( Serial.read() ==  1){
+    AbleToPassTime = 0;
+    int startTime = millis();
+    while( AbleToPassTime <= 10000 && PassNum < AbleToPassNum){
+      AbleToPassTime = millis() - startTime;
+      Serial.println("a");
+     // val = Serial.read();
+      if( (val = Serial.read()) ==  'a'){
       PassNum++;
       AbleToPassTime = 0;
-      }else{
-        return;
+      startTime = millis();
       }
     }
      Serial.println("Success! PassNum");
      Serial.println(PassNum);
+     val = 0;
+     RFIDflag = 0;
   }
 }
   
