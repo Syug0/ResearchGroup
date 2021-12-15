@@ -2,6 +2,7 @@
 
 String RFID;
 String Num;
+String COUNT;
 int i=0;
 
 void setup() {
@@ -13,15 +14,17 @@ void loop() {
   // put your main code here, to run repeatedly:
   RFID=String(i);
   Num=String(i);
-  Serial.println(rootJson(RFID,Num));
-  delay(1000);
+  COUNT=String(i);
+  Serial.println(rootJson(COUNT,RFID,Num));
+  delay(2000);
   i++;
 }
 
-String rootJson(String rfid,String num){
-  const size_t capacity = JSON_OBJECT_SIZE(2) +140;
+String rootJson(String COUNT,String rfid,String num){
+  const size_t capacity = JSON_OBJECT_SIZE(3) +140;
   DynamicJsonDocument doc(capacity);
   JsonObject info = doc.createNestedObject("info");
+  info["COUNT"]=COUNT;
   info["RFID"] =rfid;
   info["Num"] = num;
   String jsonCode;  

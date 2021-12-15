@@ -14,6 +14,7 @@ IPAddress dns(192,168,3,1);           // Set the IP of the LAN DNS
 int i=0;
 String RFID;
 String Num;
+String COUNT;
          
 void setup(){
   Serial.begin(9600);          
@@ -23,9 +24,9 @@ void setup(){
     Serial.println("Failed to Config ESP8266 IP"); 
   } 
  
-//  wifiMulti.addAP(AP_SSID, AP_PSW);           // Enter the SSID and password
+  wifiMulti.addAP(AP_SSID, AP_PSW);           // Enter the SSID and password
   wifiMulti.addAP("404nofound", "z23456791"); // ESP8266-NodeMCU起動するとwifiをスキャン
-  wifiMulti.addAP("iPhone", "zhaoxinlei"); 
+  wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3"); 
   Serial.println("Connecting ...");  
 
   int i = 0;                                 
@@ -54,8 +55,7 @@ void loop(){
 }                                                                   
  
 void handleRoot() {   //access request of the website directory "/" 
-  esp8266_server.send(200, "application/json", rootJson()); 
-  i++; 
+  esp8266_server.send(200, "application/json", rootJson());  
 }
  
 //build json
@@ -64,7 +64,7 @@ String rootJson(){
   const size_t capacity = JSON_OBJECT_SIZE(3) +140;
   DynamicJsonDocument doc(capacity);
   JsonObject info = doc.createNestedObject("info");
-  info["COUNT"]=String(i);
+  info["COUNT"]=COUNT;
   info["RFID"] =RFID;
   info["Num"] = Num;
   String jsonCode;  
@@ -75,18 +75,20 @@ String rootJson(){
 
 void readArduino(){
   String Arduino_Json;
-//  if(Serial.available()){
+  if(!Serial.available()){
+    Serial.println("fail to read!");
+  }
   Arduino_Json=Serial.readString();//read arduino data
-//  }else{
-//    return;
-//  }
-  const size_t capacity = JSON_OBJECT_SIZE(2) + 140;
+  
+  const size_t capacity = JSON_OBJECT_SIZE(3) + 140;
   DynamicJsonDocument doc(capacity);
   deserializeJson(doc, Arduino_Json);
   
   JsonObject info = doc["info"];
+  COUNT=info["COUNT"].as<String>();
   RFID=info["RFID"].as<String>();
   Num=info["Num"].as<String>();
+  Serial.println(COUNT);
   Serial.println(RFID);
   Serial.println(Num);
 //  return data;
