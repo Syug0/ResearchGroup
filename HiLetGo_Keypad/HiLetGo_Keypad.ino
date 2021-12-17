@@ -12,7 +12,7 @@ char keys[ROWS][COLS] = {
   {'*', '0', '#', 'D'}   //{s16, s12, s8, s4}に対応
 };
  
-byte rowPins[ROWS] = {6, 7, 8, 9}; //接続するピン番号
+byte rowPins[ROWS] = {6, 7, A0, A1}; //接続するピン番号
 byte colPins[COLS] = {2, 3, 4, 5}; 
  
 Keypad customKeypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS); //キーパッドの初期化
