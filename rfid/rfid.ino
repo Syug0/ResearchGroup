@@ -15,6 +15,9 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
 //Keypad
 const byte ROWS = 4; //4行のキーパッドを使用
 const byte COLS = 4; //4列のキーパッドを使用
+
+//Sensor
+int SENSOR_INPUT = A5;
  
 char keys[ROWS][COLS] = {
   //配列を表す
@@ -36,17 +39,32 @@ void setup() {
     mfrc522.PCD_Init();   // Init MFRC522
     mfrc522.PCD_DumpVersionToSerial();  // Show details of PCD - MFRC522 Card Reader details
     Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks..."));
-    //Keyboard.begin();
+
+    //Sensor
+    pinMode(SENSOR_INPUT, INPUT);
 }
 
 void loop() {
-  int RFIDflag;
+  int RFIDflag = 0;
   int AbleToPassTime;
   int PassNum = 0;
   time_t start_time, end_time;
   char ctoi;
-  char val;
+  int val;
+  val = digitalRead( SENSOR_INPUT );
+
+  Serial.println(val);
+
   
+
+  //Serial.println(val);
+  
+  //Serial.println("RFIDflag");
+  //Serial.println(RFIDflag);
+  if(RFIDflag == 0 && val == 1){
+    Serial.println("Alert");
+  }
+
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
     return;
@@ -55,9 +73,6 @@ void loop() {
   // Select one of the cards
   if ( ! mfrc522.PICC_ReadCardSerial()) {
     return;
-  }
-  if(RFIDflag == 0 && val >= 1){
-    Serial.println("Alert");
   }
 
   if(mfrc522.uid.uidByte[0] == 0x03 && mfrc522.uid.uidByte[1] == 0x28 //UID
@@ -90,20 +105,30 @@ void loop() {
   if(RFIDflag == 1){
     AbleToPassTime = 0;
     int startTime = millis();
-    while( AbleToPassTime <= 10000 && PassNum < AbleToPassNum){
+    while( AbleToPassTime <= 100000 && PassNum < AbleToPassNum){
       AbleToPassTime = millis() - startTime;
-      Serial.println("a");
-     // val = Serial.read();
-      if( (val = Serial.read()) ==  'a'){
-      PassNum++;
-      AbleToPassTime = 0;
-      startTime = millis();
+      //Serial.println("a");
+      val = digitalRead(SENSOR_INPUT);
+      Serial.println(val);
+      if( val ==  1){
+        Serial.println("if did");
+        PassNum++;
+        AbleToPassTime = 0;
+        startTime = millis();
+        val = digitalRead(SENSOR_INPUT);
+        Serial.println(val);
+        while( val == 1){
+          val = digitalRead(SENSOR_INPUT);
+          if (val == 0) {
+            break;
+          }
+        }
       }
     }
      Serial.println("Success! PassNum");
      Serial.println(PassNum);
-     val = 0;
      RFIDflag = 0;
+     //val = 0;
   }
 }
   
