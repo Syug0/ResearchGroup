@@ -20,12 +20,12 @@ void loop() {
   i++;
 }
 
-String rootJson(String COUNT,String rfid,String num){
+String rootJson(String COUNT,String RFID,String num){
   const size_t capacity = JSON_OBJECT_SIZE(3) +140;
   DynamicJsonDocument doc(capacity);
   JsonObject info = doc.createNestedObject("info");
   info["COUNT"]=COUNT;
-  info["RFID"] =rfid;
+  info["RFID"] =RFID;
   info["Num"] = num;
   String jsonCode;  
   serializeJson(doc, jsonCode);
